@@ -6,7 +6,7 @@ public class SuperArturoPrat {
 
     
     public static void main(String[] args) {
-        GameFrame gameFrame = new GameFrame();
+        GameManager manager = new GameManager();
         
     }
     
