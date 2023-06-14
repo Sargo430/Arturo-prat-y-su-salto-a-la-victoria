@@ -1,6 +1,8 @@
 
 package utility;
 
+import superarturoprat.GameManager;
+
 
 public class Constants {
     public static class Directions{
@@ -8,6 +10,13 @@ public class Constants {
         public static final int UP=1;
         public static final int RIGHT=2;
         public static final int DOWN=3;
+    } public static class UI{
+        public static class Buttons{
+            public static final int b_Width_default =140;
+            public static final int b_heigth_default =56;
+            public static final int b_width = b_Width_default*GameManager.SCALE;
+            public static final int b_heigth = b_heigth_default*GameManager.SCALE;
+        }
     }
     
     public static class PlayerConstants{

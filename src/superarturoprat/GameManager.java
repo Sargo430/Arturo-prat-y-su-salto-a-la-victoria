@@ -2,7 +2,13 @@
 package superarturoprat;
 
 import entities.Player;
+import gameStates.GameStates;
+import static gameStates.GameStates.MENU;
+import static gameStates.GameStates.PLAYING;
+import gameStates.Menu;
+import gameStates.Playing;
 import java.awt.Graphics;
+import levels.LevelManager;
 
 
 public class GameManager implements Runnable {
@@ -11,7 +17,15 @@ public class GameManager implements Runnable {
    private Thread gameThread;
    private final int FPS_set=120;
    private final int UPS_set=200;
-   private Player player;
+   public final static int TILE_ORIGINAL_SIZE=64;
+   public final static int SCALE=1;
+   public final static int TILES_WIDTH=24;
+   public final static int TILES_HEIGHT=10;
+   public final static int TILE_SIZE=TILE_ORIGINAL_SIZE*SCALE;
+   public final static int GAME_WIDTH= TILE_SIZE*TILES_WIDTH;
+   public final static int GAME_HEIGHT= TILE_SIZE*TILES_HEIGHT;
+   private Playing playing;
+   private Menu menu;
    public GameManager(){
        initClasses();
        gamePanel = new GamePanel(this);
@@ -27,10 +41,36 @@ public class GameManager implements Runnable {
        gameThread.start();
    }
    public void update(){
-       player.update();
+      
+       switch(GameStates.state){
+           case PLAYING:
+               playing.update();
+               break;
+               
+           case MENU:
+               menu.update();
+               break;
+           default:
+               break;
+       }
    }
    public void render(Graphics g){
-       player.render(g);
+       switch(GameStates.state){
+           case PLAYING:
+               playing.draw(g);
+               break;
+               
+           case MENU:
+               menu.draw(g);
+               break;
+           case OPTIONS:
+               break;
+           case QUIT:
+               System.exit(0);
+               break;
+           default:
+               break;
+       }
    }
 
     @Override
@@ -70,9 +110,19 @@ public class GameManager implements Runnable {
     }
 
     private void initClasses() {
-        player= new Player(200,200);
+        menu = new Menu(this);
+        playing = new Playing(this);
     }
-    public Player getPlayer(){
-        return player;
+   
+    public void windowFocusLost() {
+        if(GameStates.state == GameStates.PLAYING){
+           playing.getPlayer().resetDirBooleans();
+        }
+    }
+    public Menu getMenu(){
+        return menu;
+    }
+    public Playing getPlaying(){
+        return playing;
     }
 }
