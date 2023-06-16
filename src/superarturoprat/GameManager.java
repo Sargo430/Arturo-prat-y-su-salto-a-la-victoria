@@ -20,7 +20,7 @@ public class GameManager implements Runnable {
    public final static int TILE_ORIGINAL_SIZE=64;
    public final static int SCALE=1;
    public final static int TILES_WIDTH=24;
-   public final static int TILES_HEIGHT=12;
+   public final static int TILES_HEIGHT=10;
    public final static int TILE_SIZE=TILE_ORIGINAL_SIZE*SCALE;
    public final static int GAME_WIDTH= TILE_SIZE*TILES_WIDTH;
    public final static int GAME_HEIGHT= TILE_SIZE*TILES_HEIGHT;

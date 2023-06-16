@@ -24,6 +24,8 @@ public class LoadSave {
     public static final String URM_BUTTONS="/images/urm_buttons.png";
     public static final String VOLUME_BUTTONS="/images/volume_buttons.png";
     public static final String MENU_BACKGROUND_IMG="/images/menu_background_img.png";
+    public static final String LEVEL01_BACKGROUND="/images/level01_background.png";
+    public static final String LEVEL01_BIGCLOUDS="/images/level01_bigclouds.png";
     public static BufferedImage getSpriteAtlas(String fileName){
         BufferedImage image=null;
         InputStream is=LoadSave.class.getResourceAsStream(fileName);

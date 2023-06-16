@@ -6,6 +6,7 @@ import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
+import java.awt.image.BufferedImage;
 import levels.LevelManager;
 import superarturoprat.GameManager;
 import ui.PauseOverlay;
@@ -23,17 +24,20 @@ public class Playing extends State implements StateMethods{
     private int lvlTilesWide=LoadSave.getLevelData()[0].length;
     private int maxTilesOffset= lvlTilesWide - GameManager.TILES_WIDTH;
     private int maxLvlOffsetX= maxTilesOffset * GameManager.TILE_SIZE;
+    private BufferedImage background_img;
     
 
     public Playing(GameManager game) {
         super(game);
         initClasses();
+        
     }
     private void initClasses() {
         levelManager=new LevelManager(game);
         player= new Player(200,100,128,128);
         player.loadLvlData(levelManager.getCurrentLvl().getLvlData());
         pauseOverlay= new PauseOverlay(this);
+        background_img=LoadSave.getSpriteAtlas(LoadSave.LEVEL01_BACKGROUND);
     }
     public Player getPlayer(){
         return player;
@@ -56,6 +60,7 @@ public class Playing extends State implements StateMethods{
 
     @Override
     public void draw(Graphics g) {
+        g.drawImage(background_img,0,0,GameManager.GAME_WIDTH,GameManager.GAME_HEIGHT,null);
         levelManager.draw(g,xLvlOffset);
         player.render(g,xLvlOffset);
         if(paused){

@@ -8,10 +8,13 @@ import superarturoprat.GameManager;
 public class HelpMethods {
     public static boolean canMoveHere(float x, float y,float width,float height,int[][] lvlData){
         if(!IsSolid(x,y,lvlData)){
-            if(!IsSolid(x+width,y+height,lvlData)){
+            if(!IsSolid(x+width,y+height,lvlData)&&!IsSolid(x+width,y+height/2,lvlData)){
                  if(!IsSolid(x+width,y,lvlData)){
                      if(!IsSolid(x,y+height,lvlData)){
-                         return true;
+                         if(!IsSolid(x,y+height/2,lvlData)&&!IsSolid(x,y+height/3,lvlData)&&!IsSolid(x,y+height*3/4,lvlData)){
+                            return true; 
+                         }
+                         
                      }
                  }   
             } 

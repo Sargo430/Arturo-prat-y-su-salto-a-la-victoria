@@ -5,6 +5,11 @@ import superarturoprat.GameManager;
 
 
 public class Constants {
+    public static class Enviroment{
+        public static final int BIGCLOUD_WIDTH_DEFAULT=1536;
+        public static final int BIGCLOUD_HEIGHT_DEFAULT=768;
+        
+    }
     public static class Directions{
         public static final int LEFT=0;
         public static final int UP=1;
