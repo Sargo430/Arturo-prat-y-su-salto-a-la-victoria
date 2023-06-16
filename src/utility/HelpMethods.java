@@ -19,7 +19,8 @@ public class HelpMethods {
         return false;
     }
     private static boolean IsSolid(float x,float y,int[][]lvlData){
-        if(x <0 || x >= 64*24)
+        int maxWidth = lvlData[0].length*GameManager.TILE_SIZE;
+        if(x <0 || x >= maxWidth)
             {
                 return true;
             }
@@ -52,7 +53,6 @@ public class HelpMethods {
         if(airSpeed>0){
             int tileYpos= currentTile*64;
             int yOffset =(int)(64*3-hitbox.height);
-            System.out.println(yOffset-1);
             return tileYpos + yOffset-1;
         }else{
             return currentTile*64;

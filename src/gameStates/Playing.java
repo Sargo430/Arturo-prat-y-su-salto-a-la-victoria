@@ -2,16 +2,28 @@
 package gameStates;
 
 import entities.Player;
+import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import levels.LevelManager;
 import superarturoprat.GameManager;
+import ui.PauseOverlay;
+import utility.LoadSave;
 
 
 public class Playing extends State implements StateMethods{
     private Player player;
     private LevelManager levelManager;
+    private boolean paused=false;
+    private PauseOverlay pauseOverlay;
+    private int xLvlOffset;
+    private int leftBorder=(int)(0.2*GameManager.GAME_WIDTH);
+    private int rightBorder=(int)(0.8*GameManager.GAME_WIDTH);
+    private int lvlTilesWide=LoadSave.getLevelData()[0].length;
+    private int maxTilesOffset= lvlTilesWide - GameManager.TILES_WIDTH;
+    private int maxLvlOffsetX= maxTilesOffset * GameManager.TILE_SIZE;
+    
 
     public Playing(GameManager game) {
         super(game);
@@ -21,6 +33,7 @@ public class Playing extends State implements StateMethods{
         levelManager=new LevelManager(game);
         player= new Player(200,100,128,128);
         player.loadLvlData(levelManager.getCurrentLvl().getLvlData());
+        pauseOverlay= new PauseOverlay(this);
     }
     public Player getPlayer(){
         return player;
@@ -32,14 +45,25 @@ public class Playing extends State implements StateMethods{
 
     @Override
     public void update() {
-        levelManager.update();
-        player.update();
+        if(!paused){
+            levelManager.update();
+            player.update();
+            checkCloseToBorder();
+        }else{
+         pauseOverlay.update();   
+        }
     }
 
     @Override
     public void draw(Graphics g) {
-        levelManager.draw(g);
-        player.render(g);
+        levelManager.draw(g,xLvlOffset);
+        player.render(g,xLvlOffset);
+        if(paused){
+            g.setColor(new Color(0,0,0,150));
+            g.fillRect(0,0,GameManager.GAME_WIDTH,GameManager.GAME_HEIGHT);
+            pauseOverlay.draw(g);
+        }
+        
     }
 
     @Override
@@ -53,17 +77,28 @@ public class Playing extends State implements StateMethods{
 
     @Override
     public void mousePressed(MouseEvent e) {
-        
+        if(paused){
+            pauseOverlay.mousePressed(e);
+        }
     }
 
     @Override
     public void mouseReleased(MouseEvent e) {
-        
+        if(paused){
+            pauseOverlay.mouseReleased(e);
+        }
     }
 
     @Override
     public void mouseMoved(MouseEvent e) {
-        
+        if(paused){
+            pauseOverlay.mouseMoved(e);
+        }
+    }
+    public void mouseDragged(MouseEvent e){
+        if(paused){
+            pauseOverlay.mouseDragged(e);
+        }
     }
 
     @Override
@@ -80,6 +115,9 @@ public class Playing extends State implements StateMethods{
                break;
             case KeyEvent.VK_BACK_SPACE:
                 GameStates.state=GameStates.MENU;
+                break;
+            case KeyEvent.VK_ESCAPE:
+                paused=true;
                 break;
        }
     }
@@ -98,6 +136,24 @@ public class Playing extends State implements StateMethods{
                 player.setJump(false);
                break;
        }
+    }
+    public void unpauseGame(){
+        paused=false;
+    }
+
+    private void checkCloseToBorder() {
+        int playerX =(int)(player.getHitBox().x);
+        int diff = playerX-xLvlOffset;
+        if(diff > rightBorder){
+            xLvlOffset += diff - rightBorder;
+        }else if(diff < leftBorder){
+            xLvlOffset += diff - leftBorder;
+        }if(xLvlOffset > maxLvlOffsetX){
+            xLvlOffset = maxLvlOffsetX;
+        }else if(xLvlOffset <0){
+            xLvlOffset=0;
+    
+        }
     }
     
 }

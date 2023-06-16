@@ -48,9 +48,9 @@ public class Player extends Entity{
         setAnimation();
         
     }
-    public void render(Graphics g){
-        g.drawImage(animations[playerAction.ordinal()][animationIndex],(int)(hitBox.x-xDrawOffset),(int)(hitBox.y-yDrawOffset),128*getSpriteScale(playerAction),128,null);
-        drawHitbox(g);
+    public void render(Graphics g, int lvlOffset){
+        g.drawImage(animations[playerAction.ordinal()][animationIndex],(int)(hitBox.x-xDrawOffset)-lvlOffset,(int)(hitBox.y-yDrawOffset)+1,128*getSpriteScale(playerAction),128,null);
+        //drawHitbox(g);
     }
     private void loadAnimations() {
         BufferedImage arturoPratt=LoadSave.getSpriteAtlas(LoadSave.PLAYERATLAS);
@@ -116,8 +116,13 @@ public class Player extends Entity{
         if(jump){
             jump();
         }
-        if(!left && !right && !inAir){
-            return;
+//        if(!left && !right && !inAir){
+//            return;
+//        }
+        if(!inAir){
+            if((!left && !right) || (right && left)){
+                return;
+            }
         }
         float xSpeed=0;
         

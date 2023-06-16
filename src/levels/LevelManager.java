@@ -17,11 +17,11 @@ public class LevelManager {
         importOutsideSprites();
         levelOne = new Level(LoadSave.getLevelData());
     }
-    public void draw(Graphics g){
-        for(int j= 0;j < 10;j++){
-            for(int i=0; i< GameManager.TILES_WIDTH;i++){
+    public void draw(Graphics g, int lvlOffset){
+        for(int j= 0;j < GameManager.TILES_HEIGHT;j++){
+            for(int i=0; i< levelOne.getLvlData()[0].length;i++){
                 int index = levelOne.getSpriteIndex(i, j);
-                g.drawImage(levelSprite[index],i*GameManager.TILE_SIZE,j*GameManager.TILE_SIZE,GameManager.TILE_SIZE,GameManager.TILE_SIZE,null);
+                g.drawImage(levelSprite[index],i*GameManager.TILE_SIZE-lvlOffset,j*GameManager.TILE_SIZE,GameManager.TILE_SIZE,GameManager.TILE_SIZE,null);
             }
         }
         

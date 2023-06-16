@@ -14,6 +14,7 @@ import utility.LoadSave;
 public class Menu  extends State implements StateMethods{
     private MenuButton[] buttons = new MenuButton[3];
     private BufferedImage backgroundImg; 
+    private BufferedImage menuBackground;
     private int menuX,menuY,menuWidth,menuHeigth;
     public Menu(GameManager game) {
         super(game);
@@ -30,6 +31,7 @@ public class Menu  extends State implements StateMethods{
 
     @Override
     public void draw(Graphics g) {
+        g.drawImage(menuBackground,0,0,GameManager.GAME_WIDTH,GameManager.GAME_HEIGHT,null);
         g.drawImage(backgroundImg, menuX, menuY, menuWidth, menuHeigth, null);
         for(MenuButton mb:buttons){
             mb.draw(g);
@@ -106,6 +108,8 @@ public class Menu  extends State implements StateMethods{
      menuHeigth = backgroundImg.getHeight();
      menuX=game.GAME_WIDTH/2 - menuWidth/2;
      menuY=45*GameManager.SCALE;
+     menuBackground=LoadSave.getSpriteAtlas(LoadSave.MENU_BACKGROUND_IMG);
+     
     }
     
 }

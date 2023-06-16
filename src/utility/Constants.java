@@ -17,6 +17,22 @@ public class Constants {
             public static final int b_width = b_Width_default*GameManager.SCALE;
             public static final int b_heigth = b_heigth_default*GameManager.SCALE;
         }
+        public static class PauseButtons{
+            public static final int SOUND_SIZE_DEFAULT=42;
+            public static final int SOUND_SIZE=SOUND_SIZE_DEFAULT*GameManager.SCALE;
+        }
+        public static class UrmButtons{
+            public static final int URM_DEFAULT_SIZE=56;
+            public static final int URM_SIZE=(int)(URM_DEFAULT_SIZE*GameManager.SCALE);
+        }
+        public static class VolumeButtons{
+            public static final int VOLUME_DEFAULT_WIDTH=28;
+            public static final int VOLUME_DEFAULT_HEIGHT=44;
+            public static final int SLIDER_DEFAULT_WIDTH =215;
+            public static final int SLIDER_WIDTH =(int)(215*GameManager.SCALE);;
+            public static final int VOLUME_WIDTH=(int)(VOLUME_DEFAULT_WIDTH*GameManager.SCALE);
+            public static final int VOLUME_HEIGHT=(int)(VOLUME_DEFAULT_HEIGHT*GameManager.SCALE);
+        }
     }
     
     public static class PlayerConstants{
