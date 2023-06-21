@@ -3,6 +3,7 @@ package InputManager;
 
 import gameStates.GameStates;
 import static gameStates.GameStates.MENU;
+import static gameStates.GameStates.OPTIONS;
 import static gameStates.GameStates.PLAYING;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
@@ -29,6 +30,9 @@ public class KeyboardInput implements KeyListener{
             case PLAYING:
                 gamePanel.getGame().getPlaying().keyPressed(e);
                 break;
+            case OPTIONS:
+                gamePanel.getGame().getGameOptions().keyPressed(e);
+                break;
         } 
     }
 
@@ -41,6 +45,7 @@ public class KeyboardInput implements KeyListener{
             case PLAYING:
                 gamePanel.getGame().getPlaying().keyReleased(e);
                 break;
+            
         }
     }
     
