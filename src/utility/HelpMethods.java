@@ -129,7 +129,7 @@ public class HelpMethods {
             for(int i=0; i< image.getWidth();i++){
                 Color color = new Color(image.getRGB(i, j));
                 int value= color.getRed();
-                if(value>21){
+                if(value>35){
                     value=7;
                 }
                 lvlData[j][i]= value;

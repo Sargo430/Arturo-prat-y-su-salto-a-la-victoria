@@ -36,8 +36,8 @@ public class LevelManager {
 
     private void importOutsideSprites() {
         BufferedImage img =LoadSave.getSpriteAtlas(LoadSave.LEVELATLAS);
-        levelSprite= new BufferedImage[21];
-        for(int j=0;j<3;j++){
+        levelSprite= new BufferedImage[35];
+        for(int j=0;j<5;j++){
             for(int i=0;i<7;i++){
                 int index= j*7 + i;
                 levelSprite[index]=img.getSubimage(i*64, j*64, 64, 64);

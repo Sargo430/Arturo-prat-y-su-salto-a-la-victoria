@@ -6,7 +6,7 @@ import superarturoprat.GameManager;
 
 public class Cannon extends GameObjects {
     private int tileY;
-    
+    private int cdTick=501;
     public Cannon(int x, int y, int objectType) {
         super(x, y, objectType);
         tileY = y/GameManager.TILE_SIZE;
@@ -22,6 +22,16 @@ public class Cannon extends GameObjects {
     }
     public int getTileY(){
         return tileY;
+    }
+    public boolean cooldown(int cd){
+        return cdTick>cd;
+        
+    }
+    public void updateCdTick(){
+        cdTick++;
+    }
+    public void resetCdTick(){
+        cdTick=0;
     }
     
 }

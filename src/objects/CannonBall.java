@@ -11,8 +11,8 @@ import static utility.Constants.Projectiles.CANNON_BALL_WIDTH;
  */
 public class CannonBall extends Projectile{
     
-    public CannonBall(int x, int y, int direction) {
-        super(x, y, direction);
+    public CannonBall(int x, int y, int direction,float speed) {
+        super(x, y, direction,speed);
         
         int xOffset=(int)(-3*GameManager.SCALE*3);
         int yOffset=(int)(5*GameManager.SCALE*3);

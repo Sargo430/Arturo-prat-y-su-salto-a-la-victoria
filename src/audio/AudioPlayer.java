@@ -18,6 +18,7 @@ public class AudioPlayer {
     public static int MENU = 0;
     public static int LEVEL_1=1;
     public static int LEVEL_2=2;
+    public static int LEVEL_3=3;
     
     public static int DIE=0;
     public static int JUMP =1;
@@ -25,9 +26,10 @@ public class AudioPlayer {
     public static int LVL_COMPLETED=3;
     public static int SWORD_ATTACK1=4;
     public static int SWORD_ATTACK2=5;
+    public static int GUN_SHOT=6;
     private Clip[] songs,effects;
     private int currentSongId;
-    private float volume = 1f;
+    private float volume = 0.5f;
     private boolean musicMute,sfxMute;
     private Random rand = new Random();
     public AudioPlayer(){
@@ -36,7 +38,7 @@ public class AudioPlayer {
         playSong(MENU);
     }
     private void loadSongs(){
-        String[] names = {"menu","level1","level2"};
+        String[] names = {"menu","level1","level2","level3"};
         songs = new Clip[names.length];
         for(int i = 0;i<songs.length;i++){
             songs[i] = getClip(names[i]);
@@ -44,7 +46,7 @@ public class AudioPlayer {
         
     }
     private void loadSFX(){
-        String[] names = {"die","jump","gameOver","level_completed","attack01","attack02"};
+        String[] names = {"die","jump","gameOver","level_completed","attack01","attack02","gun_shot"};
         effects = new Clip[names.length];
         for(int i = 0;i<effects.length;i++){
             effects[i] = getClip(names[i]);
@@ -139,7 +141,11 @@ public class AudioPlayer {
         effects[sfx].setMicrosecondPosition(0);
         effects[sfx].start();
     }
-    
+    public void stopAllEffects(){
+        for(Clip c:effects){
+            c.stop();
+        }
+    }
     
     
 }

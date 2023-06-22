@@ -61,11 +61,14 @@ public class LevelCompletedOverlay {
                 playing.resetAll();
                 GameStates.state=GameStates.MENU;
                 playing.setGameState(GameStates.MENU);
+                playing.getGame().getAudioPlayer().stopAllEffects();
+                
             }
         }else if(isIn(next,e)){
             if(next.isMousePressed()){
                 playing.loadNextLvl();
                 playing.getGame().getAudioPlayer().setLevelSong(playing.getLevelManager().getLvlIndex());
+                playing.getGame().getAudioPlayer().stopAllEffects();
             }
         }
         menu.resetBools();

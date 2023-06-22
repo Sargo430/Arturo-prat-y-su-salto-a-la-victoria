@@ -9,12 +9,14 @@ public class Projectile {
    private Rectangle2D.Float hitbox;
    private int direction; 
    private boolean active=true;
-   public Projectile(int x, int y,int direction){
+   private float projectileSpeed;
+   public Projectile(int x, int y,int direction,float speed){
        this.direction=direction;
+       this.projectileSpeed=speed;
 
    }
    public void updatePos(){
-       hitbox.x +=direction*SPEED;
+       hitbox.x +=direction*projectileSpeed;
    }
    public void setPos(int x,int y){
        hitbox.x=x;
@@ -35,6 +37,9 @@ public class Projectile {
     }
     protected void initHitbox(int x, int y,int width,int height){
         hitbox=new Rectangle2D.Float(x,y,width,height);
+    }
+    protected int getDirection(){
+        return direction;
     }
    
 }

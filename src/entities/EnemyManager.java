@@ -60,8 +60,8 @@ public class EnemyManager {
             if(p.isActive()){
                 g.drawImage(peruanoArr[p.getEnemyState()][p.getAniIndex()],(int)(p.getHitBox().x-xLvlOffset-p.flipW()*PERUANO_DRAWOFFSET_X)+ p.flipX(),
                     (int)(p.getHitBox().y)-PERUANO_DRAWOFFSET_Y+1,PERUANO_WIDTH*2*getSpriteScale(0,p.getEnemyState())*p.flipW(),PERUANO_HEIGHT*2,null);
-                drawHitbox(g,xLvlOffset,p);
-                p.drawAttackBox(g,xLvlOffset);
+                //drawHitbox(g,xLvlOffset,p);
+                //p.drawAttackBox(g,xLvlOffset);
             }
             
         }
@@ -80,6 +80,17 @@ public class EnemyManager {
             if(p.isActive()){
                 if(attackBox.intersects(p.getHitBox())){
                 p.hurt(10);
+                return;
+            }
+            }
+            
+        }
+    }
+    public void checkEnemyShoot(Rectangle2D.Float attackBox){
+                for(Peruano p:peruanos){
+            if(p.isActive()){
+                if(attackBox.intersects(p.getHitBox())){
+                p.hurt(200);
                 return;
             }
             }

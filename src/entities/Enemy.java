@@ -18,6 +18,7 @@ public abstract class Enemy extends Entity{
     protected float attackDistance=128;
     protected boolean active=true;
     protected boolean attackChecked;
+    protected int cdTick=0;
     public Enemy(float x, float y, int width, int height, int enemyType,int entityType) {
         super(x, y, width, height,entityType);
         this.enemyType=enemyType;
@@ -93,7 +94,6 @@ public abstract class Enemy extends Entity{
     }
     protected boolean canSeePlayer(int[][] lvlData,Player player){
         int playerTileY= (int)(player.getHitBox().y/GameManager.TILE_SIZE);
-        System.out.println(playerTileY +" "+tileY);
         if(playerTileY==tileY){
             if(isPlayerInRange(player)){
                 if(isSightClear(lvlData,hitBox,player.hitBox,tileY)){
@@ -145,6 +145,16 @@ public abstract class Enemy extends Entity{
         newState(IDLE);
         active=true;
         airSpeed=0;
+    }
+    protected boolean cooldown(int cd){
+        return cdTick>cd;
+        
+    }
+    protected void updateCdTick(){
+        cdTick++;
+    }
+    protected void resetCdTick(){
+        cdTick=0;
     }
    
 }

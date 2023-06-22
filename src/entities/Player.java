@@ -114,8 +114,8 @@ public class Player extends Entity{
                 (int)(hitBox.y-yDrawOffset)+1,
                 128*getSpriteScale(playerAction)*flipW,
                 128,null);
-        drawHitbox(g,lvlOffset);
-        drawAttackBox(g,lvlOffset);
+        //drawHitbox(g,lvlOffset);
+        //drawAttackBox(g,lvlOffset);
         drawUI(g);
     }
     private void loadAnimations() {
@@ -177,6 +177,10 @@ public class Player extends Entity{
             }
         }else if(gunAttacking){
              playerAction=Constants.PlayerAction.GUN_ATTACK;
+             if(startAnim != Constants.PlayerAction.GUN_ATTACK.ordinal()){
+                aniIndex=0;
+                aniTick=0;
+            }
         }
         if(startAnim!=playerAction.ordinal()){
             resetAniTick();
@@ -387,13 +391,17 @@ public class Player extends Entity{
         currentHealth=maxHealth;
         hitBox.x=x;
         hitBox.y=y;
+        currentBullets=maxBullets;
         if(!isEntityOnFloor(hitBox,lvlData)){
             inAir=true;
         }
     }
 
-    public void changeAmmo(int BLUE_POTION_VALUE) {
-        System.out.println("more ammo");
+    public void changeAmmo(int change) {
+        currentBullets+=change;
+        if(currentBullets>maxBullets){
+            currentBullets=maxBullets;
+        }
     }
 
     private void checkPotionTouched() {
@@ -410,6 +418,12 @@ public class Player extends Entity{
     }
     public int getTileY(){
         return tileY;
+    }
+    public int getDirection(){
+        return flipW;
+    }
+    public int getCurrentAmmo(){
+        return currentBullets;
     }
 
   

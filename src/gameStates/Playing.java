@@ -33,7 +33,7 @@ public class Playing extends State implements StateMethods{
     private int leftBorder=(int)(0.2*GameManager.GAME_WIDTH);
     private int rightBorder=(int)(0.8*GameManager.GAME_WIDTH);
     private int maxLvlOffsetX;
-    private BufferedImage background_img,secondLayer,thirdLayer;
+    private BufferedImage[] background_img,secondLayer,thirdLayer;
     private int[] smallCloudsPos;
     private EnemyManager enemyManager;
     private Random rnd= new Random();
@@ -57,9 +57,8 @@ public class Playing extends State implements StateMethods{
         pauseOverlay= new PauseOverlay(this);
         gameOverOverlay = new GameOverOverlay(this);
         levelCompletedOverlay = new LevelCompletedOverlay(this);
-        background_img=LoadSave.getSpriteAtlas(LoadSave.LEVEL01_BACKGROUND);
-        secondLayer=LoadSave.getSpriteAtlas(LoadSave.LEVEL01_BIGCLOUDS);
-        thirdLayer=LoadSave.getSpriteAtlas(LoadSave.LEVEL01_SMALLCLOUDS);
+        
+        getBackGroundImgs();
         smallCloudsPos= new int[8];
         for(int i = 0; i< smallCloudsPos.length;i++){
             smallCloudsPos[i]=(int)(90*GameManager.SCALE)+rnd.nextInt((int)(170*GameManager.SCALE));
@@ -100,7 +99,7 @@ public class Playing extends State implements StateMethods{
 
     @Override
     public void draw(Graphics g) {
-        g.drawImage(background_img,0,0,GameManager.GAME_WIDTH,GameManager.GAME_HEIGHT,null);
+        g.drawImage(background_img[levelManager.getLvlIndex()],0,0,GameManager.GAME_WIDTH,GameManager.GAME_HEIGHT,null);
         drawClouds(g);
         levelManager.draw(g,xLvlOffset);
         player.render(g,xLvlOffset);
@@ -125,9 +124,16 @@ public class Playing extends State implements StateMethods{
             player.setSwordAttacking(true);
             }else if(e.getButton()==MouseEvent.BUTTON3){
                 player.setGunAttacking(true);
+                if(player.getCurrentAmmo()>0){
+                    game.getAudioPlayer().playEffect(AudioPlayer.GUN_SHOT);
+                    objectManager.shootBullets(player);
+                    player.changeAmmo(-1); 
+                }
+                
             }
             else if(lvlCompleted){
                levelCompletedOverlay.mousePressed(e);
+               
            }
         }
         
@@ -250,10 +256,10 @@ public class Playing extends State implements StateMethods{
 
     private void drawClouds(Graphics g) {
         for(int i=0;i<4;i++){
-           g.drawImage(secondLayer,0+i* BIGCLOUD_WIDTH-(int)(xLvlOffset*0.2),(int)(348*GameManager.SCALE),BIGCLOUD_WIDTH*2,BIGCLOUD_HEIGHT*2,null);
+           g.drawImage(secondLayer[levelManager.getLvlIndex()],0+i* BIGCLOUD_WIDTH*2-(int)(xLvlOffset*0.2),(int)(348*GameManager.SCALE),BIGCLOUD_WIDTH*2,BIGCLOUD_HEIGHT*2,null);
         }
         for(int i=0; i< smallCloudsPos.length;i++){
-            g.drawImage(thirdLayer,SMALLCLOUD_WIDTH*4*i-(int)(xLvlOffset*0.5),smallCloudsPos[i],SMALLCLOUD_WIDTH,SMALLCLOUD_HEIGHT,null);
+            g.drawImage(thirdLayer[levelManager.getLvlIndex()],SMALLCLOUD_WIDTH*4*i-(int)(xLvlOffset*0.5),smallCloudsPos[i],SMALLCLOUD_WIDTH,SMALLCLOUD_HEIGHT,null);
         }
         
     }
@@ -269,6 +275,9 @@ public class Playing extends State implements StateMethods{
     }
     public void checkEnemyHit(Rectangle2D.Float attackBox){
         enemyManager.checkEnemyHit(attackBox);
+    }
+    public void checkEnemyShoot(Rectangle2D.Float attackBox){
+        enemyManager.checkEnemyShoot(attackBox);
     }
     public void setGameOver(boolean gameOver){
         this.gameOver=gameOver;
@@ -323,6 +332,23 @@ public class Playing extends State implements StateMethods{
 
     public void setPlayerDying(boolean b) {
         this.playerDying=b;
+    }
+
+    private void getBackGroundImgs() {
+        background_img =new BufferedImage[5];
+        secondLayer= new BufferedImage[5];
+        thirdLayer=new BufferedImage[5];
+        background_img[0]=LoadSave.getSpriteAtlas(LoadSave.LEVEL01_BACKGROUND);
+        secondLayer[1]=LoadSave.getSpriteAtlas(LoadSave.LEVEL02_BIGCLOUDS);
+        thirdLayer[1]=LoadSave.getSpriteAtlas(LoadSave.LEVEL02_SMALLCLOUDS);
+        
+        background_img[1]=LoadSave.getSpriteAtlas(LoadSave.LEVEL02_BACKGROUND);
+        secondLayer[1]=LoadSave.getSpriteAtlas(LoadSave.LEVEL02_SECOND_LAYER);
+        thirdLayer[1]=LoadSave.getSpriteAtlas(LoadSave.LEVEL02_SMALLCLOUDS);
+        
+        background_img[2]=LoadSave.getSpriteAtlas(LoadSave.LEVEL03_BACKGROUND);
+        secondLayer[2]=LoadSave.getSpriteAtlas(LoadSave.LEVEL03_SECOND_LAYER);
+        thirdLayer[2]=LoadSave.getSpriteAtlas(LoadSave.LEVEL02_SMALLCLOUDS);
     }
     
 }

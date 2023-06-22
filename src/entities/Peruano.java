@@ -7,10 +7,7 @@ import java.awt.geom.Rectangle2D;
 import superarturoprat.GameManager;
 import static utility.Constants.Directions.LEFT;
 import static utility.Constants.EnemyConstants.*;
-import static utility.HelpMethods.GetEntityYPosCollision;
-import static utility.HelpMethods.canMoveHere;
-import static utility.HelpMethods.isEntityOnFloor;
-import static utility.HelpMethods.isFloor;
+
 import static utility.Constants.Directions.*;
 /**
  *
@@ -36,7 +33,7 @@ public class Peruano extends Enemy{
                case RUNNING:
                    if(canSeePlayer(lvlData,player)){
                        turnTowardsPlayer(player);
-                       if(isPlayerInAttackRange(player)){
+                       if(isPlayerInAttackRange(player) && cooldown(250)){
                        newState(ATTACKING);
                    }
                    
@@ -50,6 +47,7 @@ public class Peruano extends Enemy{
                    }
                    if(aniIndex==1 && !attackChecked){
                        checkPlayerHit(attackBox,player);
+                       resetCdTick();
                    }
                    break;
                case HIT:
@@ -60,6 +58,7 @@ public class Peruano extends Enemy{
     public void update(int[][]lvlData,Player player){
         updateBehaviour(lvlData,player);
         updateAnimationTick();
+        updateCdTick();
         updateAttackBox();
     }
     public int flipX(){
