@@ -12,6 +12,12 @@ import static utility.Constants.Directions.*;
 
 
 public class KeyboardInput implements KeyListener{
+    public static int MOVE_RIGHT= KeyEvent.VK_D;
+    public static int MOVE_LEFT= KeyEvent.VK_A;
+    public static int JUMP_KEY= KeyEvent.VK_SPACE;
+    public static int PAUSE_KEY= KeyEvent.VK_ESCAPE;
+    public static int SWORD_ATTACK_KEY=KeyEvent.VK_E;
+    public static int GUN_ATTACK_KEY=KeyEvent.VK_R;
     GamePanel gamePanel;
     public KeyboardInput(GamePanel gamePanel){
         this.gamePanel=gamePanel;
@@ -48,5 +54,6 @@ public class KeyboardInput implements KeyListener{
             
         }
     }
+    
     
 }

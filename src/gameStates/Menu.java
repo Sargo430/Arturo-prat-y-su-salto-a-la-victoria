@@ -16,14 +16,17 @@ public class Menu  extends State implements StateMethods{
     private BufferedImage backgroundImg; 
     private BufferedImage menuBackground;
     private int menuX,menuY,menuWidth,menuHeigth;
+    
     public Menu(GameManager game) {
         super(game);
         loadButtons();
         loadBackground();
+        
     }
 
     @Override
     public void update() {
+        
         for(MenuButton mb:buttons){
             mb.update();
         }
@@ -36,6 +39,7 @@ public class Menu  extends State implements StateMethods{
         for(MenuButton mb:buttons){
             mb.draw(g);
         }
+        
     }
 
     @Override
@@ -83,9 +87,7 @@ public class Menu  extends State implements StateMethods{
 
     @Override
     public void keyPressed(KeyEvent e) {
-        if(e.getKeyCode()== KeyEvent.VK_ENTER){
-            GameStates.state = GameStates.PLAYING;
-        }
+        
     }
 
     @Override

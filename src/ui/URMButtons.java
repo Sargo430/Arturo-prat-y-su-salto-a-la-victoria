@@ -9,8 +9,9 @@ import static utility.Constants.UI.UrmButtons.*;
 
 public class URMButtons extends PauseButton {
     private BufferedImage[] imgs;
-    private int rowIndex,index;
-    private boolean mouseOver,mousePressed;
+    protected int rowIndex,index;
+    
+    protected boolean mouseOver,mousePressed;
     public URMButtons(int x, int y, int width, int height, int rowIndex) {
         super(x, y, width, height);
         this.rowIndex=rowIndex; 

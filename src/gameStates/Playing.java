@@ -1,6 +1,7 @@
 
 package gameStates;
 
+import static InputManager.KeyboardInput.*;
 import audio.AudioPlayer;
 import entities.EnemyManager;
 import entities.Player;
@@ -40,8 +41,7 @@ public class Playing extends State implements StateMethods{
     private boolean gameOver=false;
     private boolean lvlCompleted = false;
     private boolean playerDying=false;
-    
-
+    private int winX;
     public Playing(GameManager game) {
         super(game);
         initClasses();
@@ -67,6 +67,7 @@ public class Playing extends State implements StateMethods{
         calcLvlOffset();
         loadStartLevel();
         
+        
     }
     public Player getPlayer(){
         return player;
@@ -91,6 +92,9 @@ public class Playing extends State implements StateMethods{
             levelManager.update();
             objectManager.update(levelManager.getCurrentLvl().getLvlData(),player);
             player.update();
+            if(player.getHitBox().x>winX){
+                lvlCompleted=true;
+            }
             enemyManager.update(levelManager.getCurrentLvl().getLvlData(),player);
             checkCloseToBorder();
         }
@@ -123,12 +127,7 @@ public class Playing extends State implements StateMethods{
             if(e.getButton()==MouseEvent.BUTTON1){
             player.setSwordAttacking(true);
             }else if(e.getButton()==MouseEvent.BUTTON3){
-                player.setGunAttacking(true);
-                if(player.getCurrentAmmo()>0){
-                    game.getAudioPlayer().playEffect(AudioPlayer.GUN_SHOT);
-                    objectManager.shootBullets(player);
-                    player.changeAmmo(-1); 
-                }
+                gunAttack();
                 
             }
             else if(lvlCompleted){
@@ -137,6 +136,14 @@ public class Playing extends State implements StateMethods{
            }
         }
         
+    }
+    private void gunAttack(){
+        player.setGunAttacking(true);
+                if(player.getCurrentAmmo()>0){
+                    game.getAudioPlayer().playEffect(AudioPlayer.GUN_SHOT);
+                    objectManager.shootBullets(player);
+                    player.changeAmmo(-1); 
+                }
     }
 
     @Override
@@ -196,42 +203,37 @@ public class Playing extends State implements StateMethods{
             gameOverOverlay.keyPressed(e);
         }
         else{
-
-            switch(e.getKeyCode()){
-              case KeyEvent.VK_A:
-                   player.setLeft(true);
-                   break;
-               case KeyEvent.VK_D:
-                  player.setRight(true);
-                  break;
-               case KeyEvent.VK_SPACE:
-                   player.setJump(true);
-                  break;
-               case KeyEvent.VK_BACK_SPACE:
-                   GameStates.state=GameStates.MENU;
-                   break;
-               case KeyEvent.VK_ESCAPE:
-                   paused=true;
-                   break;
+            
+            if(e.getKeyCode()==MOVE_LEFT){
+                player.setLeft(true);
+            }else if(e.getKeyCode()==MOVE_RIGHT){
+                player.setRight(true);
             }
+            else if(e.getKeyCode()==JUMP_KEY){
+                player.setJump(true);
+            }else if(e.getKeyCode()==PAUSE_KEY){
+                paused=true;
+            }else if(e.getKeyCode()==SWORD_ATTACK_KEY){
+                player.setSwordAttacking(true);
+            }else if(e.getKeyCode()==GUN_ATTACK_KEY){
+                gunAttack();
+            }
+            
         }
     }
 
     @Override
     public void keyReleased(KeyEvent e) {
         if(!gameOver){
-           switch(e.getKeyCode()){
-
-            case KeyEvent.VK_A:
+            if(e.getKeyCode()==MOVE_LEFT){
                 player.setLeft(false);
-                break;
-            case KeyEvent.VK_D:
-               player.setRight(false);
-               break;
-            case KeyEvent.VK_SPACE:
+            }else if(e.getKeyCode()==MOVE_RIGHT){
+                player.setRight(false);
+            }
+            else if(e.getKeyCode()==JUMP_KEY){
                 player.setJump(false);
-               break;
-       } 
+            }
+ 
         }
         
     }
@@ -271,7 +273,6 @@ public class Playing extends State implements StateMethods{
         player.resetAll();
         enemyManager.resetlAllEnemies();
         objectManager.resetAllObjects();
-        
     }
     public void checkEnemyHit(Rectangle2D.Float attackBox){
         enemyManager.checkEnemyHit(attackBox);
@@ -285,6 +286,7 @@ public class Playing extends State implements StateMethods{
 
     private void calcLvlOffset() {
         maxLvlOffsetX= levelManager.getCurrentLvl().getLvlOffset();
+        winX= levelManager.getCurrentLvl().getLvlTilesWide()*64 -96;
         
     }
 
@@ -295,6 +297,7 @@ public class Playing extends State implements StateMethods{
     public void loadNextLvl(){
         resetAll();
         levelManager.loadNextLvl();
+        calcLvlOffset();
         player.setSpawn(levelManager.getCurrentLvl().getPlayerSpawn());
     }
     public EnemyManager getEnemyManager(){
@@ -339,8 +342,6 @@ public class Playing extends State implements StateMethods{
         secondLayer= new BufferedImage[5];
         thirdLayer=new BufferedImage[5];
         background_img[0]=LoadSave.getSpriteAtlas(LoadSave.LEVEL01_BACKGROUND);
-        secondLayer[1]=LoadSave.getSpriteAtlas(LoadSave.LEVEL02_BIGCLOUDS);
-        thirdLayer[1]=LoadSave.getSpriteAtlas(LoadSave.LEVEL02_SMALLCLOUDS);
         
         background_img[1]=LoadSave.getSpriteAtlas(LoadSave.LEVEL02_BACKGROUND);
         secondLayer[1]=LoadSave.getSpriteAtlas(LoadSave.LEVEL02_SECOND_LAYER);
@@ -349,6 +350,15 @@ public class Playing extends State implements StateMethods{
         background_img[2]=LoadSave.getSpriteAtlas(LoadSave.LEVEL03_BACKGROUND);
         secondLayer[2]=LoadSave.getSpriteAtlas(LoadSave.LEVEL03_SECOND_LAYER);
         thirdLayer[2]=LoadSave.getSpriteAtlas(LoadSave.LEVEL02_SMALLCLOUDS);
+        
+        background_img[3]=LoadSave.getSpriteAtlas(LoadSave.LEVEL03_BACKGROUND);
+        secondLayer[3]=LoadSave.getSpriteAtlas(LoadSave.LEVEL02_BIGCLOUDS);
+        thirdLayer[3]=LoadSave.getSpriteAtlas(LoadSave.LEVEL02_SMALLCLOUDS);
+        
+        background_img[4]=LoadSave.getSpriteAtlas(LoadSave.LEVEL04_BACKGROUND);
+        secondLayer[4]=LoadSave.getSpriteAtlas(LoadSave.LEVEL02_BIGCLOUDS);
+        thirdLayer[4]=LoadSave.getSpriteAtlas(LoadSave.LEVEL02_SMALLCLOUDS);
+        
     }
     
 }

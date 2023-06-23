@@ -102,7 +102,12 @@ public class HelpMethods {
     }
     public static boolean isSightClear(int[][]lvlData,Rectangle2D.Float firstHitbox,Rectangle2D.Float secondHitbox,int yTile){
         int firstXtile = (int)(firstHitbox.x/GameManager.TILE_SIZE);
-        int secondXtile = (int)(secondHitbox.x/GameManager.TILE_SIZE);
+        int secondXtile;
+        if(IsSolid(secondHitbox.x,secondHitbox.y+secondHitbox.height+1,lvlData)){
+            secondXtile = (int)(secondHitbox.x/GameManager.TILE_SIZE);
+        }else{
+           secondXtile = (int)((secondHitbox.x+secondHitbox.width)/GameManager.TILE_SIZE); 
+        }
         if(firstXtile>secondXtile){
             return isAllTilesWalkable(secondXtile,firstXtile,yTile,lvlData);
             

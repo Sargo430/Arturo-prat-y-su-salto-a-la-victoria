@@ -104,6 +104,10 @@ public class Level {
     public ArrayList<Cannon> getCannons() {
         return cannons;
     }
+
+    public int getLvlTilesWide() {
+        return lvlTilesWide;
+    }
     
     
 }

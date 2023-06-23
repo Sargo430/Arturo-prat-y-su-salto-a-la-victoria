@@ -114,6 +114,9 @@ public class ObjectManager {
                 c.update();
             }
         }
+        for(Spike s:spikes){
+            s.updateCdTick();
+        }
         updateCannons(lvlData,player);
         updateProjectiles(lvlData,player);
     }
@@ -127,8 +130,9 @@ public class ObjectManager {
     }
     public void checkSpikesTouched(Player player){
         for(Spike s:spikes){
-            if(s.getHitbox().intersects(player.getHitBox())){
-                player.kill();
+            if(s.getHitbox().intersects(player.getHitBox())&&s.cooldown(100)){
+                player.changeHealth(-20);
+                s.resetCdTick();
             }
         }
     }
