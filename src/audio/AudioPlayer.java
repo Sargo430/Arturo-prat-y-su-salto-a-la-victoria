@@ -19,6 +19,8 @@ public class AudioPlayer {
     public static int LEVEL_1=1;
     public static int LEVEL_2=2;
     public static int LEVEL_3=3;
+    public static int LEVEL_4=4;
+    public static int LEVEL_5=5;
     
     public static int DIE=0;
     public static int JUMP =1;
@@ -27,6 +29,7 @@ public class AudioPlayer {
     public static int SWORD_ATTACK1=4;
     public static int SWORD_ATTACK2=5;
     public static int GUN_SHOT=6;
+    public static int CANNON_SHOOT=7;
     private Clip[] songs,effects;
     private int currentSongId;
     private float volume = 0.5f;
@@ -38,7 +41,7 @@ public class AudioPlayer {
         playSong(MENU);
     }
     private void loadSongs(){
-        String[] names = {"menu","level1","level2","level3"};
+        String[] names = {"menu","level1","level2","level3","level4","level5"};
         songs = new Clip[names.length];
         for(int i = 0;i<songs.length;i++){
             songs[i] = getClip(names[i]);
@@ -46,7 +49,7 @@ public class AudioPlayer {
         
     }
     private void loadSFX(){
-        String[] names = {"die","jump","gameOver","level_completed","attack01","attack02","gun_shot"};
+        String[] names = {"die","jump","gameOver","level_completed","attack01","attack02","gun_shot","Cannon Sound Effect"};
         effects = new Clip[names.length];
         for(int i = 0;i<effects.length;i++){
             effects[i] = getClip(names[i]);

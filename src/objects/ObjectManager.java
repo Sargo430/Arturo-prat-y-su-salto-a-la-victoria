@@ -1,6 +1,7 @@
 
 package objects;
 
+import audio.AudioPlayer;
 import entities.Player;
 import gameStates.Playing;
 import java.awt.Color;
@@ -271,6 +272,7 @@ public class ObjectManager {
         if(c.getObjectType()==CANNON_LEFT){
             dir=-1;
         }
+        playing.getGame().getAudioPlayer().playEffect(AudioPlayer.CANNON_SHOOT);
         cannonBalls.add(new CannonBall((int)c.getHitbox().x,(int)c.getHitbox().y,dir,SPEED*2));
     }
     public void shootBullets(Player player){

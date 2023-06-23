@@ -93,7 +93,7 @@ public class Playing extends State implements StateMethods{
             objectManager.update(levelManager.getCurrentLvl().getLvlData(),player);
             player.update();
             if(player.getHitBox().x>winX){
-                lvlCompleted=true;
+                setLvlCompleted(true);
             }
             enemyManager.update(levelManager.getCurrentLvl().getLvlData(),player);
             checkCloseToBorder();
@@ -351,11 +351,11 @@ public class Playing extends State implements StateMethods{
         secondLayer[2]=LoadSave.getSpriteAtlas(LoadSave.LEVEL03_SECOND_LAYER);
         thirdLayer[2]=LoadSave.getSpriteAtlas(LoadSave.LEVEL02_SMALLCLOUDS);
         
-        background_img[3]=LoadSave.getSpriteAtlas(LoadSave.LEVEL03_BACKGROUND);
+        background_img[3]=LoadSave.getSpriteAtlas(LoadSave.LEVEL04_BACKGROUND);
         secondLayer[3]=LoadSave.getSpriteAtlas(LoadSave.LEVEL02_BIGCLOUDS);
         thirdLayer[3]=LoadSave.getSpriteAtlas(LoadSave.LEVEL02_SMALLCLOUDS);
         
-        background_img[4]=LoadSave.getSpriteAtlas(LoadSave.LEVEL04_BACKGROUND);
+        background_img[4]=LoadSave.getSpriteAtlas(LoadSave.LEVEL05_BACKGROUND);
         secondLayer[4]=LoadSave.getSpriteAtlas(LoadSave.LEVEL02_BIGCLOUDS);
         thirdLayer[4]=LoadSave.getSpriteAtlas(LoadSave.LEVEL02_SMALLCLOUDS);
         
