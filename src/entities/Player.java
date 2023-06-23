@@ -1,10 +1,17 @@
 
 package entities;
 
+import audio.AudioPlayer;
+import gameStates.Playing;
+import java.awt.Color;
 import java.awt.Graphics;
+import java.awt.Point;
+import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 import superarturoprat.GameManager;
 import utility.Constants;
+import static utility.Constants.ANIMATION_SPEED;
+import static utility.Constants.GRAVITY;
 import utility.HelpMethods.*;
 
 import static utility.Constants.PlayerConstants.getSpriteAmount;
@@ -21,42 +28,101 @@ import utility.LoadSave;
  */
 public class Player extends Entity{
     private BufferedImage[][] animations;
-    private int animationTick,animationIndex=0;
-    private int animationSpeed=7;
     private Constants.PlayerAction playerAction= Constants.PlayerAction.IDLE;
-    private boolean left,up,right,down,jump=false;
-    private boolean moving,swordAttacking,gunAttacking = false;
-    private float playerSpeed=3.0f*GameManager.SCALE;   
+    private boolean left,right,down,jump=false;
+    private boolean moving,swordAttacking,gunAttacking = false; 
     private int[][] lvlData;
     private float xDrawOffset=18*2;
-    private float yDrawOffset=0*2;
-    private float airSpeed=0;
-    private float gravity= 0.04f;
+    private float yDrawOffset=6*2;
     private float jumpSpeed = -4.5f;
     private float fallSpeedAfterCollision=0.5f;
-    private boolean inAir=false;
-        
-    public Player(float x, float y,int width,int height) {
-        super(x, y,width,height);
+    private BufferedImage statusBarImg;
+    
+    private int statusBarWidth= (int)(238*GameManager.SCALE*1.25);
+    private int statusBarHeight= (int)(63*GameManager.SCALE*1.25);
+    private int statusBarX= (int)(10*GameManager.SCALE);
+    private int statusBarY= (int)(10*GameManager.SCALE);
+    
+    private int healthBarWidth= (int)(172*GameManager.SCALE*1.25);
+    private int healthBarHeight= (int)(6*GameManager.SCALE*1.25);
+    private int healthBarX= (int)(34*GameManager.SCALE*1.25);
+    private int healthBarY= (int)(14*GameManager.SCALE*1.25);
+    private int tileY =0;
+    private int maxBullets = 6;
+    private int currentBullets = maxBullets;
+    private int bulletOvalDiameter = (int)(8*GameManager.SCALE);
+    private int xDrawBullet,yDrawBullet;
+
+    private int healthWidth=healthBarWidth;
+    private boolean attackChecked=false;
+    private int flipX=0;
+    private int flipW=1;
+    private Playing playing;
+    public Player(float x, float y,int width,int height,int entityType,Playing playing) {
+        super(x, y,width,height, entityType);
+        this.playing = playing;
+        this.maxHealth=100;
+        this.currentHealth=maxHealth;
+        this.walkSpeed=3.0f*GameManager.SCALE;
         loadAnimations();
-        initHitbox(x,y,(int)64,(int)128);
+        initHitbox(x,y,(int)64,(int)116);
+        initAttackbox();
         
     }
+    public void setSpawn(Point spawn){
+        this.x = spawn.x;
+        this.y=spawn.y;
+        hitBox.x=x;
+        hitBox.y=y;
+    }
     public void update(){
+        updateHealthBar();
+        if(currentHealth <=0){
+            if(playerAction != Constants.PlayerAction.DEATH){
+                playerAction= Constants.PlayerAction.DEATH;
+                aniTick=0;
+                aniIndex=0;
+                playing.setPlayerDying(true);
+                playing.getGame().getAudioPlayer().playEffect(AudioPlayer.DIE);
+            }else if(aniIndex==getSpriteAmount(Constants.PlayerAction.DEATH)-1 && aniTick >= ANIMATION_SPEED-1){
+                playing.setGameOver(true);
+                playing.getGame().getAudioPlayer().stopSong();
+                playing.getGame().getAudioPlayer().playEffect(AudioPlayer.GAMEOVER);
+            }else{
+                updateAnimationTick();
+            }
+            return;
+        }
+        
+        updateAttackbox();
         updatePos();
+        if(moving){
+            checkPotionTouched();
+            checkSpikesTouched();
+            tileY =(int)(hitBox.y/GameManager.TILE_SIZE);
+        }
+        if(swordAttacking){
+            checkAttack();
+        }
         updateAnimationTick();
         setAnimation();
         
     }
     public void render(Graphics g, int lvlOffset){
-        g.drawImage(animations[playerAction.ordinal()][animationIndex],(int)(hitBox.x-xDrawOffset)-lvlOffset,(int)(hitBox.y-yDrawOffset)+1,128*getSpriteScale(playerAction),128,null);
-        //drawHitbox(g);
+        g.drawImage(animations[playerAction.ordinal()][aniIndex]
+                ,(int)(hitBox.x-xDrawOffset)-lvlOffset + flipX,
+                (int)(hitBox.y-yDrawOffset)+1,
+                128*getSpriteScale(playerAction)*flipW,
+                128,null);
+        //drawHitbox(g,lvlOffset);
+        //drawAttackBox(g,lvlOffset);
+        drawUI(g);
     }
     private void loadAnimations() {
         BufferedImage arturoPratt=LoadSave.getSpriteAtlas(LoadSave.PLAYERATLAS);
-        animations = new BufferedImage[7][16];
+        animations = new BufferedImage[9][16];
         for(int j=0;j<animations.length;j++ ){
-            if(j<5){
+            if(j<7){
                 for(int i =0; i<animations[j].length;i++){
                     animations[j][i]= arturoPratt.getSubimage(i*64,j*64,64,64);
                 }
@@ -64,8 +130,10 @@ public class Player extends Entity{
                 for(int i =0; i<2;i++){
                     animations[j][i]= arturoPratt.getSubimage(i*64*2,j*64,64*2,64);
                 }
+                
             }
-    }}
+    }statusBarImg= LoadSave.getSpriteAtlas(LoadSave.STATUS_BAR);
+    }
     public void loadLvlData(int[][] lvlData){
         this.lvlData=lvlData;
         if(!isEntityOnFloor(hitBox,lvlData)){
@@ -74,14 +142,15 @@ public class Player extends Entity{
     }
     
    private void updateAnimationTick() {
-        animationTick++;
-        if (animationTick>=animationSpeed){
-            animationTick=0;
-            animationIndex++;
-            if(animationIndex>=getSpriteAmount(playerAction)){
-                animationIndex=0;
+        aniTick++;
+        if (aniTick>=ANIMATION_SPEED){
+            aniTick=0;
+            aniIndex++;
+            if(aniIndex>=getSpriteAmount(playerAction)){
+                aniIndex=0;
                 swordAttacking=false;
                 gunAttacking=false;
+                attackChecked=false;
             }
         }
     }
@@ -102,8 +171,16 @@ public class Player extends Entity{
         }
         if(swordAttacking){
             playerAction=Constants.PlayerAction.SWORD_ATTACK;
+            if(startAnim != Constants.PlayerAction.SWORD_ATTACK.ordinal()){
+                aniIndex=0;
+                aniTick=0;
+            }
         }else if(gunAttacking){
              playerAction=Constants.PlayerAction.GUN_ATTACK;
+             if(startAnim != Constants.PlayerAction.GUN_ATTACK.ordinal()){
+                aniIndex=0;
+                aniTick=0;
+            }
         }
         if(startAnim!=playerAction.ordinal()){
             resetAniTick();
@@ -127,9 +204,13 @@ public class Player extends Entity{
         float xSpeed=0;
         
         if(left){
-            xSpeed -= playerSpeed;
+            xSpeed -= walkSpeed;
+            flipX=width;
+            flipW=-1;
         }if(right){
-            xSpeed += playerSpeed;
+            xSpeed += walkSpeed;
+            flipX=0;
+            flipW=1;            
         }
         if(!inAir){
             if(!isEntityOnFloor(hitBox,lvlData)){
@@ -139,11 +220,11 @@ public class Player extends Entity{
         if(inAir){
             if(canMoveHere(hitBox.x,hitBox.y+airSpeed,hitBox.width,hitBox.height,lvlData)){
                 hitBox.y+=airSpeed;
-                airSpeed +=gravity;
+                airSpeed +=GRAVITY;
                 updateXPos(xSpeed);
                 
             }else{
-                hitBox.y=GetEntityYPosCollision(hitBox,airSpeed);
+                hitBox.y=GetEntityYPosCollision(hitBox,airSpeed,0);
                 if(airSpeed>0){
                     resetInAir();
                 }else{
@@ -166,14 +247,6 @@ public class Player extends Entity{
         this.left = left;
     }
 
-    public boolean isUp() {
-        return up;
-    }
-
-    public void setUp(boolean up) {
-        this.up = up;
-    }
-
     public boolean isRight() {
         return right;
     }
@@ -193,7 +266,6 @@ public class Player extends Entity{
     public void resetDirBooleans() {
         left=false;
         down=false;
-        up=false;
         right=false;
     }
     public void setSwordAttacking(boolean attacking){
@@ -204,8 +276,8 @@ public class Player extends Entity{
     }
 
     private void resetAniTick() {
-        animationTick=0;
-        animationIndex=0;
+        aniTick=0;
+        aniIndex=0;
     }
 
     private void updateXPos(float xSpeed) {
@@ -225,12 +297,136 @@ public class Player extends Entity{
         if(inAir){
             return;
         }
+        playing.getGame().getAudioPlayer().playEffect(AudioPlayer.JUMP);
         inAir = true;
         airSpeed = jumpSpeed;
     }
     public void setJump(boolean jump){
         this.jump=jump;
     }
+
+    private void drawUI(Graphics g) {
+        g.drawImage(statusBarImg,statusBarX,statusBarY,statusBarWidth,statusBarHeight,null);
+        g.setColor(Color.red);
+        g.fillRect(healthBarX + statusBarX,healthBarY + statusBarY,healthWidth,healthBarHeight);
+        drawBulletBar(g);
+    }
+
+    private void updateHealthBar() {
+        healthWidth=(int)((currentHealth/(float)maxHealth)*healthBarWidth);
+    }
+    private void drawBulletBar(Graphics g){
+        g.setColor(new Color(196,163,0,255));
+        if(currentBullets>0){
+           for(int i =1; i<=currentBullets;i++){
+            if(i==1){
+                xDrawBullet=47;
+                yDrawBullet=47;
+            }else if(i==2){
+                xDrawBullet=41;
+                yDrawBullet=59;
+            }
+            else if(i==3){
+                xDrawBullet=47;
+                yDrawBullet=73;
+            }else if(i==4){
+                xDrawBullet=66;
+                yDrawBullet=73;
+            }
+            else if(i==5){
+                xDrawBullet=72;
+                yDrawBullet=59;
+            }
+            else if(i==6){
+                xDrawBullet=66;
+                yDrawBullet=47;
+            }
+            g.fillOval(xDrawBullet, yDrawBullet, bulletOvalDiameter, bulletOvalDiameter);
+        } 
+        }
+        
+    }
+    public void changeHealth(int value){
+        currentHealth+=value;
+        if(currentHealth <=0){
+            currentHealth=0;
+            //muelto
+        }else if(currentHealth >= maxHealth){
+            currentHealth = maxHealth;
+        }
+    }
+
+    private void initAttackbox() {
+        attackBox= new Rectangle2D.Float(x,y,(int)(58*GameManager.SCALE*2),(int)(58*GameManager.SCALE*2));
+    }
+
+    private void updateAttackbox() {
+        if(right){
+            attackBox.x=hitBox.x+hitBox.width+ (int)(15*GameManager.SCALE*2);
+        }else if(left){
+            attackBox.x=hitBox.x-hitBox.width - (int)(44*GameManager.SCALE*2);
+        }
+        attackBox.y=hitBox.y + (10 * GameManager.SCALE);
+    }
+
+    private void checkAttack() {
+        if(attackChecked || aniIndex != 1){
+            return;
+        }
+        else{
+            attackChecked=true;
+            playing.checkEnemyHit(attackBox);
+            playing.checkObjectHit(attackBox);
+            playing.getGame().getAudioPlayer().playAttackSound();
+        }
+    }
+
+    public void resetAll() {
+        resetDirBooleans();
+        inAir=false;
+        swordAttacking=false;
+        gunAttacking=false;
+        moving=false;
+        playerAction=Constants.PlayerAction.IDLE;
+        currentHealth=maxHealth;
+        hitBox.x=x;
+        hitBox.y=y;
+        currentBullets=maxBullets;
+        if(!isEntityOnFloor(hitBox,lvlData)){
+            inAir=true;
+        }
+    }
+
+    public void changeAmmo(int change) {
+        currentBullets+=change;
+        if(currentBullets>maxBullets){
+            currentBullets=maxBullets;
+        }
+    }
+
+    private void checkPotionTouched() {
+        playing.checkPotionTouched(hitBox);
+        
+    }
+
+    public void kill() {
+        currentHealth=0;
+    }
+
+    private void checkSpikesTouched() {
+        playing.checkSpikesTouched(this);
+    }
+    public int getTileY(){
+        return tileY;
+    }
+    public int getDirection(){
+        return flipW;
+    }
+    public int getCurrentAmmo(){
+        return currentBullets;
+    }
+
+  
     
     
 }
